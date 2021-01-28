@@ -69,7 +69,7 @@ class App extends React.Component {
       categories: [],
       selectedCategory: "",
       inputText: "",
-      currentJoke: { } 
+      currentJoke: "" 
       
     }
   }    
@@ -166,6 +166,7 @@ class App extends React.Component {
   // digitata nel campo di testo
    getJokeByKeyword = async () => {
     let jokes = {}
+    let currentJoke=""
     /* let error = false */
 
     try {
@@ -174,13 +175,12 @@ class App extends React.Component {
       const data = await response.json()
       
       if (data && data.status) throw new Error(data.error)
-    
 
       jokes = {...data}
     
       console.log("errore", data.error)
       console.log("oggetto", jokes.result[0].value)
-
+      currentJoke=jokes.result[0].value
     } catch (err) {
       console.log(err)
       launchErrorAlert()
@@ -191,7 +191,7 @@ class App extends React.Component {
     } finally { 
       this.setState({
           ...this.state, 
-          currentJoke: jokes.result[0].value,
+          currentJoke: currentJoke,
           loading: false,
           error:false
         })
@@ -259,7 +259,7 @@ class App extends React.Component {
             onClick={this.getJokeByKeyword} >    
             <h2>GET RANDOM JOKE FOR SELECTED CATEGORY</h2>
           </button> */}
-          <Joke value={this.state.currentJoke}/> 
+       <Joke value={this.state.currentJoke}/> 
         </div>
         <div className="footer">
         <code>Esame di React per cfp-futura. Grazie ad <a href="https://api.chucknorris.io">api.chucknorris.io</a> per l'immagine e le api. Docente: Vito Vitale. Studente: Mariella Renzelli</code>
