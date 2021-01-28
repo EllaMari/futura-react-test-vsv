@@ -259,7 +259,7 @@ class App extends React.Component {
             onClick={this.getJokeByKeyword} >    
             <h2>GET RANDOM JOKE FOR SELECTED CATEGORY</h2>
           </button> */}
-          {/* <Joke value={this.state.currentJoke}/>  */}
+          <Joke value={this.state.currentJoke}/> 
         </div>
         <div className="footer">
         <code>Esame di React per cfp-futura. Grazie ad <a href="https://api.chucknorris.io">api.chucknorris.io</a> per l'immagine e le api. Docente: Vito Vitale. Studente: Mariella Renzelli</code>
