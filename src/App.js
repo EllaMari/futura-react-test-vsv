@@ -3,8 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 
 const ALLCATEGORIESURL = 'https://api.chucknorris.io/jokes/categories'
-const RANDOMJOKEBYCATURL = 'https://api.chucknorris.io/jokes/random?category=' // remember to fill this
-const ALLLJOKESBYKEYWORD = 'https://api.chucknorris.io/jokes/search?query=' // remember to fill this
+const RANDOMJOKEBYCATURL = 'https://api.chucknorris.io/jokes/random?category=' 
+const ALLLJOKESBYKEYWORD = 'https://api.chucknorris.io/jokes/search?query=' 
+
 const launchErrorAlert = () => setTimeout(() => window.alert('errore!'), 500) 
 
 // classe 'App-logo-spinning' durante il caricamento, altrimenti classe 'App-logo'
@@ -13,50 +14,48 @@ const Logo = ({ loading }) => {
     <img
       src={logo}
       alt='interactive-logo'
-      loading={loading}
+      className={loading}
     />
   )
 }
 
-/* const CategoryButton = ({ title, onClick }) => {
+const CategoryButton = ({ title, onClick }) => {
   return (
   <button className="Cat-button" onClick={onClick} >
      <code>{title}</code>
   </button>
   )
-} */
+}
 
 
-/* const CategoriesList = ({ categories, onCategoryClick }) => {
+const CategoriesList = ({ categories, onCategoryClick }) => {
   // per ciascun elemento di 'categories' renderizzare il componente <CategoryButton />
   return (
     <p>
-      {props.categories.map((category, index) => 
+      {categories.map((category, index) => 
         <span key={`cat-${index}`}>
           <CategoryButton
             title={category}
-            onClick={props.onCategoryClick}
-           
+            onClick={onCategoryClick}
             />
         </span>
       )}
     </p>
   )
-} */
+}
 
 const Joke = ({ value, categories }) => {
   return (
   <div className="Joke">
     <code className="Joke-Value">{value}</code>
-      {/*  per ciascun elemento di 'categories', renderizzare:
-      <span className="Selected-Cat" ... >
-      <code>{* QUI LA STRINGA DELLA SINGOLA CATEGORIA *}</code>
-      </span> */}
+   {/*  <>
+      {categories.map((category, index) => 
+        <span className="Selected-Cat" key={`cat-${index}`}>
+          <code>{category} </code> 
+        </span>)}
+    </>  */}
    </div>
-
-
   )
-  
 }
 
 class App extends React.Component {
@@ -69,18 +68,16 @@ class App extends React.Component {
       categories: [],
       selectedCategory: "",
       inputText: "",
-      currentJoke: "" 
-      
+      currentJoke: "",
+      isCatMode: false
     }
   }    
-/* 
-  // getAllCategories
-  // funzione che deve recuperare l'array di tutte le categorie esistenti e salvarlo
+
   getAllCategories =  async () => {
+  // funzione che deve recuperare l'array di tutte le categorie esistenti e salvarlo
     let categories = []
     let error = false
     try {
-      this.setState({ loading: true })
       const response = await fetch(ALLCATEGORIESURL)
       const data = await response.json()
       console.log('NEL TRY DATA: ', data)
@@ -92,82 +89,79 @@ class App extends React.Component {
 
     } catch (err) {
 
-      error = true
       this.setState({
         ...this.state,
-        error}, 
-        () => { console.log( "eccomi!",this.state.error)})
+        error:true
+      })
       
     } finally { 
       this.setState({
-          ...this.state, // see immutables
+          ...this.state, 
           categories: categories,
           loading: false,
-          error //SINTASSI ABBREVIATA DI error:error
-        })
+          error 
+      })
     }
-  } */
+  } 
 
-  /* // onCategoryClick
-  // funzione richiamata al click del componente CategoryButton
-  onCategoryClick = async () => {
-      const jokeToShow= this.state.storedQuotes.filter(singleQuote => singleQuote.tags.findIndex(tag => tag === event.target.name) > -1)
-      console.log("hai filtrato?", filterQuotes)
-      this.setState({ 
-        ...this.state,
-        selectedTag: event.target.name,
-        quotesToShow: filterQuotes,
-        },
-        () => {
-         console.log("le citazioni per tag sono: ", this.state.quotesToShow)}
-      )
-    }
-    let joke = {}
+
+  onCategoryClick =  (event) => {
+  // funzione richiamata al click del componente CategoryButton  
+  console.log ("categoria:", event.target.outerText)
+      this.setState({
+          ...this.state,
+          selectedCategory: event.target.outerText,
+          isCatMode: true,
+          currentJoke: "",
+          inputText: ""
+      })
+  }
+
+
+
+  getRandomJokeByCat = async () => {
+  // funzione che recupera una singola barzelletta e la salva
+    let joke= {}
     let error = false
 
-      try {
-        this.setState({ loading: true })
-        const response = await fetch(RANDOMJOKEBYCATURL+this.state.selectedCategory)
-        const data = await response.json()
-        console.log('NEL TRY DATA: ', data)
-        
-        if (data.error) throw new Error(data.error)
+    try {
+    this.setState({ loading: true })
+    const response = await fetch(`${RANDOMJOKEBYCATURL}${this.state.selectedCategory}`)
+    const data = await response.json()
+     console.log('NEL TRY DATA: ', data)
       
-        joke = {...data}
-        console.log("errore", data.error)
-  
-      } catch (err) {
-
-        error = true
-        this.setState({
-          ...this.state,
-          error}, 
-          () => { console.log( "eccomi!",this.state.error)})
-        
-      } finally { 
-        this.setState({
-            ...this.state, // see immutables
-            currentJoke: joke,
-            loading: false,
-            error //SINTASSI ABBREVIATA DI error:error
-          })
-      }
-    }
+    if (data.error) throw new Error(data.error)
     
+    joke = {...data}
+    console.log("errore", data.error)
 
-  } */
+    } catch (err) {
 
-  // getRandomJokeByCat
-  // funzione che recupera una singola barzelletta e la salva
+     error = true
+     this.setState({
+         ...this.state,
+        error}, 
+        () => { console.log( "eccomi!",this.state.error)
+      })
+      
+    } finally { 
+      this.setState({
+        ...this.state,
+        currentJoke: joke.value, 
+        loading: false,
+        error 
+     })
+    }
+  }
 
 
   // getJokeByKeyword
   // funzione che recupera le barzellette contenenti la parola chiave
   // digitata nel campo di testo
-   getJokeByKeyword = async () => {
+  getJokeByKeyword = async () => {
     let jokes = {}
     let currentJoke=""
-    /* let error = false */
+    let error = false
 
     try {
       this.setState({ loading: true })
@@ -175,6 +169,7 @@ class App extends React.Component {
       const data = await response.json()
       
       if (data && data.status) throw new Error(data.error)
+      if (data &&data.result.length=== 0 ) throw new Error(data.error)
 
       jokes = {...data}
     
@@ -193,10 +188,12 @@ class App extends React.Component {
           ...this.state, 
           currentJoke: currentJoke,
           loading: false,
-          error:false
+          isCatMode: false,
+          error
         })
-    }
+    } 
   }
+  
 
 
 
@@ -209,14 +206,19 @@ class App extends React.Component {
     })
   }
 
-  // qui i lifecycle methods
+  componentDidMount() {
+    this.getAllCategories()
+  }
+
+
+
 
   render () {
     return (
       <div className="App">
         <div className="App-header">
           <Logo
-            className={`App-logo${this.state.loading ? " App-logo-spinning" : ""}`}
+            loading={`App-logo${this.state.loading ? " App-logo-spinning" : ""}`}
           />
           <input
             type="search"
@@ -230,14 +232,13 @@ class App extends React.Component {
             className="Search-Button"
             onClick={this.getJokeByKeyword}
           >
-            <code>CLICK TO SEARCH!</code>
+          <code>CLICK TO SEARCH!</code>
           </button>
           <code>or: </code>
-          {/* <CategoriesList
+          <CategoriesList
           categories ={this.state.categories}
           onCategoryClick={this.onCategoryClick}
-        
-          /> */}
+          />
         </div>
         <div className="Content">
           <img
@@ -245,21 +246,26 @@ class App extends React.Component {
             className="Chuck-Logo"
             alt="chuck-logo"
           />
-          <code>
-            <h2>
-              SELECTED CATEGORY:
-              <span className="Selected-Cat">
-                {/* QUI LA CATEGORIA SELEZIONATA */}
-              </span>
-            </h2>
-          </code>
-          {/* <button
-            className="Random-Button"
-            type="button" 
-            onClick={this.getJokeByKeyword} >    
-            <h2>GET RANDOM JOKE FOR SELECTED CATEGORY</h2>
-          </button> */}
-       <Joke value={this.state.currentJoke}/> 
+
+          {this.state.isCatMode === true
+          ? (<> <code>
+                <h2>
+                SELECTED CATEGORY:
+                <span className="Selected-Cat">
+                  {this.state.selectedCategory}
+                </span>
+                </h2>
+              </code>
+              <button
+                className="Random-Button"
+                type="button" 
+                onClick={this.getRandomJokeByCat}>    
+                <h2>GET RANDOM JOKE FOR SELECTED CATEGORY</h2>
+              </button>
+              <Joke value={this.state.currentJoke} categories={this.state.categories}/>
+            </> )
+
+        : (<Joke value={this.state.currentJoke} categories={this.state.categories}/>)}
         </div>
         <div className="footer">
         <code>Esame di React per cfp-futura. Grazie ad <a href="https://api.chucknorris.io">api.chucknorris.io</a> per l'immagine e le api. Docente: Vito Vitale. Studente: Mariella Renzelli</code>
@@ -267,7 +273,8 @@ class App extends React.Component {
       </div>
     );
   }
-
 }
+
+
 
 export default App;
